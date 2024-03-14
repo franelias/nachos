@@ -1,0 +1,9 @@
+2) El default es 32 * 128 = 4096 bytes, aunque el número de paginas físicas puede modificarse por consola. (mmu.cc)
+3) Se puede utilizar la flag -m <numero de paginas fisicas> (system.cc línea 157).
+4) El tamaño es de 4 + 128 * 32 * 32 = 131076 bytes (disk.cc linea 29).
+5) Simula 63 - 3 = 60 instrucciones de MIPS (encoding.hh).
+6) Ambos están definidos en el archivo main.cc de la carpeta threads.
+7) 
+8) ASSERT evalua una expresion booleana y si no es true, muestra en pantalla un mensaje de error y aborta la ejecución del programa (assert.cc).
+   DEBUG permite, dada una flag, mostrar un mensaje en pantalla solo si la flag fue activada, a traves de la opcion -d <flags> al correr el programa (system.cc debug.cc).
+9) 
