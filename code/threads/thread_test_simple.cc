@@ -13,7 +13,7 @@
 
 #ifdef SEMAPHORE_TEST
 #include "semaphore.hh"
-Semaphore *sem = new Semaphore("sem", 3);
+static Semaphore *sem = new Semaphore("sem", 3);
 #endif
 
 /// Loop 10 times, yielding the CPU to another ready thread each iteration.
