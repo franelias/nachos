@@ -6,4 +6,43 @@
 7) 
 8) ASSERT evalua una expresion booleana y si no es true, muestra en pantalla un mensaje de error y aborta la ejecución del programa (assert.cc).
    DEBUG permite, dada una flag, mostrar un mensaje en pantalla solo si la flag fue activada, a traves de la opcion -d <flags> al correr el programa (system.cc debug.cc).
-9) 
+9) Las flags de depuración sirven para mostrar en pantalla ciertos mensajes cuando estas están activadas. La flag 'f' sirve para depurar el file system, 'd' los discos, 'i' para interrupciones, 'x' un fix correspondiente a los ticks de ejecución de un programa, 'm' para machine, 'a' para memoria (address), 'n' para network, 't' para threads, 'e' para excepciones y '+' para todas a la vez.
+10) Dichas constantes no son definidas en el código fuente de nachos, sino que se definen al momento de compilar el programa con la flag -D, la cual puede verse dentro de los makefiles.
+11) /// General options
+/// ---------------
+///
+/// * `-d`  -- causes certain debugging messages to be printed (cf.
+///            `utility.hh`).
+/// * `-do` -- enables options that modify the behavior when printing
+///            debugging messages.
+/// * `-rs` -- causes `Yield` to occur at random (but repeatable) spots.
+/// * `-z`  -- prints version and copyright information, and exits.
+/// * `-m`  -- size of emulated physical memory (in pages)
+///
+/// *THREADS* options
+/// -----------------
+///
+/// * `-tt`  -- tests the threading subsystem; the user is asked to choose a
+///            test to run from a collection of available tests.
+/// * `-tN` -- runs the Nth test.
+///
+/// *USER_PROGRAM* options
+/// ----------------------
+///
+/// * `-s`  -- causes user programs to be executed in single-step mode.
+/// * `-x`  -- runs a user program.
+/// * `-tc` -- tests the console.
+///
+/// *FILESYS* options
+/// -----------------
+///
+/// * `-f`  -- causes the physical disk to be formatted.
+/// * `-cp` -- copies a file from UNIX to Nachos.
+/// * `-pr` -- prints a Nachos file to standard output.
+/// * `-rm` -- removes a Nachos file from the file system.
+/// * `-ls` -- lists the contents of the Nachos directory.
+/// * `-D`  -- prints the contents of the entire file system.
+/// * `-c`  -- checks the filesystem integrity.
+/// * `-tf` -- tests the performance of the Nachos file system.
+13) List es una lista enlazada común y corriente, mientras que SynchList es una lista enlazada concurrente, donde sus métodos solo se ejecutan por un thread a la vez.
+14) 

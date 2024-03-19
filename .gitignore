@@ -1,3 +1,7 @@
 *.o
 nachos
 *.depends
+coff2flat
+coff2noff
+disassemble
+readnoff

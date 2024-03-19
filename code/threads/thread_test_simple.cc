@@ -4,13 +4,17 @@
 /// All rights reserved.  See `copyright.h` for copyright notice and
 /// limitation of liability and disclaimer of warranty provisions.
 
-
 #include "thread_test_simple.hh"
-#include "system.hh"
 
 #include <stdio.h>
 #include <string.h>
 
+#include "system.hh"
+
+#ifdef SEMAPHORE_TEST
+#include "semaphore.hh"
+Semaphore *sem = new Semaphore("sem", 3);
+#endif
 
 /// Loop 10 times, yielding the CPU to another ready thread each iteration.
 ///
@@ -18,40 +22,62 @@
 ///   purposes.
 
 bool thread2Done = false;
-void
-SimpleThread(void *name_)
-{
+bool thread3Done = false;
+bool thread4Done = false;
+bool thread5Done = false;
 
+void SimpleThread(void *name_) {
     // If the lines dealing with interrupts are commented, the code will
     // behave incorrectly, because printf execution may cause race
     // conditions.
     for (unsigned num = 0; num < 10; num++) {
+#ifdef SEMAPHORE_TEST
+        sem->P();
+#endif
         printf("*** Thread `%s` is running: iteration %u\n", currentThread->GetName(), num);
+#ifdef SEMAPHORE_TEST
+        sem->V();
+#endif
         currentThread->Yield();
     }
-    if (strcmp(currentThread->GetName(),"2nd")==0) {
-	thread2Done = true;
+    if (strcmp(currentThread->GetName(), "2nd") == 0) {
+        thread2Done = true;
+    }
+    if (strcmp(currentThread->GetName(), "3rd") == 0) {
+        thread3Done = true;
+    }
+    if (strcmp(currentThread->GetName(), "4th") == 0) {
+        thread4Done = true;
+    }
+    if (strcmp(currentThread->GetName(), "5th") == 0) {
+        thread5Done = true;
     }
     printf("!!! Thread `%s` has finished SimpleThread\n", currentThread->GetName());
- 
 }
 
 /// Set up a ping-pong between several threads.
 ///
 /// Do it by launching one thread which calls `SimpleThread`, and finally
 /// calling `SimpleThread` on the current thread.
-void
-ThreadTestSimple()
-{
-    Thread *newThread = new Thread("2nd");
-    newThread->Fork(SimpleThread, NULL);
+void ThreadTestSimple() {
+    Thread *newThread2 = new Thread("2nd");
+    newThread2->Fork(SimpleThread, NULL);
 
-    //the "main" thread also executes the same function
+    Thread *newThread3 = new Thread("3rd");
+    newThread3->Fork(SimpleThread, NULL);
+
+    Thread *newThread4 = new Thread("4th");
+    newThread4->Fork(SimpleThread, NULL);
+
+    Thread *newThread5 = new Thread("5th");
+    newThread5->Fork(SimpleThread, NULL);
+
+    // the "main" thread also executes the same function
     SimpleThread(NULL);
 
-   //Wait for the 2nd thread to finish if needed
-    while (!thread2Done) {
-        currentThread->Yield(); 
+    // Wait for the 2nd thread to finish if needed
+    while (!thread2Done && !thread3Done && !thread4Done && !thread5Done) {
+        currentThread->Yield();
     }
     printf("Test finished\n");
 }
