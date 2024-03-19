@@ -32,10 +32,12 @@ void SimpleThread(void *name_) {
     // conditions.
     for (unsigned num = 0; num < 10; num++) {
 #ifdef SEMAPHORE_TEST
+        DEBUG('s', "Semaphore.P()\n");
         sem->P();
 #endif
         printf("*** Thread `%s` is running: iteration %u\n", currentThread->GetName(), num);
 #ifdef SEMAPHORE_TEST
+        DEBUG('s', "Semaphore.V()\n");
         sem->V();
 #endif
         currentThread->Yield();
