@@ -1,48 +1,76 @@
+1) Existen varias razones para emular la CPU. En primer lugar, esto simplifica mucho el proceso de emulación del SO, ya que no habrá que lidiar con hardware real. En segundo lugar, permite crear un entorno portable que podrá ser ejecutado en cualquier hardware, y no necesitará uno específico. Además ejectuar un SO experimental directamente en el hardware podría generar problemas como cuelgues, y dañarlo. Por último, resulta mucho más sencillo depurar el SO en un CPU emulado.
 2) El default es 32 * 128 = 4096 bytes, aunque el número de paginas físicas puede modificarse por consola. (mmu.cc)
 3) Se puede utilizar la flag -m <numero de paginas fisicas> (system.cc línea 157).
 4) El tamaño es de 4 + 128 * 32 * 32 = 131076 bytes (disk.cc linea 29).
 5) Simula 63 - 3 = 60 instrucciones de MIPS (encoding.hh).
 6) Ambos están definidos en el archivo main.cc de la carpeta threads.
 7) 
+   - main llama a Initialize del archivo system.cc, que llama a:
+      - la macro ASSERT del archivo assert.hh del directorio /lib
+      - RandomInit del archivo system_dep.cc del directorio /machine
+      - Los metodos SetFlags y SetFlagsSetOpts de un objeto Debug de utility.cc
+      - new Statistics, clase definida en statistics.hh
+      - new Interrupt, clase definida en interrupt.hh
+      - new Scheduler, clase definida en scheduler.hh
+      - new Timer, clase definida en timer.hh
+      - new Thread, clase definida en thread.hh
+      - El metodo SetStatus del objeto currentThread creado anteriormente
+      - El metodo Enable del objeto interrupt creado anteriormente
+      - La funcion CallOnUserAbort definida en system_dep.cc
+   - main llama a DEBUG, macro defina en utility.hh, que reemplaza por la funcion Print de un objeto Debug.
+   - Si se utiliza la bandera -i, se llama a la funcion SysInfo definida en sys_info.cc que llama a:
+      - printf de la libreria stdio
+   - Si se utiliza la bandera -z, se llama a la funcion PrintVersion definida en main.cc, que llama a:
+      - printf de la libreria stdio
+   - Si se utiliza la bandera -tt, se llama a la funcion ThreadTest definida en thread_test.cc, que llama a:
+      - La macro DEBUG
+      - La funcion Choose defina en thread_test.cc
+   y luego al metodo Halt del objeto Interrupt creado anteriormente, que llama a:
+      - printf de la libreria stdio
+      - El metodo Print de un object Statistics creado anteriormente
+      - La funcion Cleanup del archivo system.cc
+   - Si se utiliza la bandera -t, se llama a la funcion ThreadTest (con argumento i) definida en thread_test.cc, que llama a:
+      - La macro DEBUG
+      - La funcion Choose defina en thread_test.cc
+   y luego al metodo Halt del objeto Interrupt creado anteriormente, que llama a:
+      - printf de la libreria stdio
+      - El metodo Print de un object Statistics creado anteriormente
+      - La funcion Cleanup del archivo system.cc
+   - Finalmente, llama al metodo Finish del objeto currentThread que llama a:
+      - El metodo SetLevel del objeto interrupt definido anteriormente
+      - La macro ASSERT del archivo assert.hh del directorio /lib
+      - La macro DEBUG del archivo utility.hh del directorio /lib
+      - El metodo Sleep del objeto currentThread
 8) ASSERT evalua una expresion booleana y si no es true, muestra en pantalla un mensaje de error y aborta la ejecución del programa (assert.cc).
    DEBUG permite, dada una flag, mostrar un mensaje en pantalla solo si la flag fue activada, a traves de la opcion -d <flags> al correr el programa (system.cc debug.cc).
 9) Las flags de depuración sirven para mostrar en pantalla ciertos mensajes cuando estas están activadas. La flag 'f' sirve para depurar el file system, 'd' los discos, 'i' para interrupciones, 'x' un fix correspondiente a los ticks de ejecución de un programa, 'm' para machine, 'a' para memoria (address), 'n' para network, 't' para threads, 'e' para excepciones y '+' para todas a la vez.
 10) Dichas constantes no son definidas en el código fuente de nachos, sino que se definen al momento de compilar el programa con la flag -D, la cual puede verse dentro de los makefiles.
-11) /// General options
-/// ---------------
-///
-/// * `-d`  -- causes certain debugging messages to be printed (cf.
-///            `utility.hh`).
-/// * `-do` -- enables options that modify the behavior when printing
-///            debugging messages.
-/// * `-rs` -- causes `Yield` to occur at random (but repeatable) spots.
-/// * `-z`  -- prints version and copyright information, and exits.
-/// * `-m`  -- size of emulated physical memory (in pages)
-///
-/// *THREADS* options
-/// -----------------
-///
-/// * `-tt`  -- tests the threading subsystem; the user is asked to choose a
-///            test to run from a collection of available tests.
-/// * `-tN` -- runs the Nth test.
-///
-/// *USER_PROGRAM* options
-/// ----------------------
-///
-/// * `-s`  -- causes user programs to be executed in single-step mode.
-/// * `-x`  -- runs a user program.
-/// * `-tc` -- tests the console.
-///
-/// *FILESYS* options
-/// -----------------
-///
-/// * `-f`  -- causes the physical disk to be formatted.
-/// * `-cp` -- copies a file from UNIX to Nachos.
-/// * `-pr` -- prints a Nachos file to standard output.
-/// * `-rm` -- removes a Nachos file from the file system.
-/// * `-ls` -- lists the contents of the Nachos directory.
-/// * `-D`  -- prints the contents of the entire file system.
-/// * `-c`  -- checks the filesystem integrity.
-/// * `-tf` -- tests the performance of the Nachos file system.
+11) 
+Opciones generales
+-d -- provoca la impresión de ciertos mensajes de depuración (ver utility.hh).
+-do -- habilita opciones que modifican el comportamiento al imprimir mensajes de depuración.
+-rs -- provoca que Yield ocurra en puntos aleatorios (pero repetibles).
+-z -- imprime la versión e información de derechos de autor, y sale del programa.
+-m -- tamaño de la memoria física emulada (en páginas)
+
+Opciones de THREADS
+-tt -- prueba el subsistema de hilos; se le pide al usuario que elija una prueba para ejecutar de una colección de pruebas disponibles.
+-tN -- ejecuta la prueba número N.
+
+Opciones de USER_PROGRAM
+-s -- hace que los programas de usuario se ejecuten en modo de paso único.
+-x -- ejecuta un programa de usuario.
+-tc -- prueba la consola.
+
+Opciones de FILESYS
+-f -- provoca que el disco físico sea formateado.
+-cp -- copia un archivo de UNIX a Nachos.
+-pr -- imprime un archivo de Nachos en la salida estándar.
+-rm -- elimina un archivo de Nachos del sistema de archivos.
+-ls -- lista los contenidos del directorio de Nachos.
+-D -- imprime los contenidos de todo el sistema de archivos.
+-c -- verifica la integridad del sistema de archivos.
+-tf -- prueba el rendimiento del sistema de archivos de Nachos.
+
 13) List es una lista enlazada común y corriente, mientras que SynchList es una lista enlazada concurrente, donde sus métodos solo se ejecutan por un thread a la vez.
 14) 
